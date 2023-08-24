@@ -10,7 +10,6 @@ import 'package:mobile/services/profie_service.dart';
 import 'package:mobile/utils/rests/handle_push_view.dart';
 import 'package:mobile/utils/rests/logger.dart';
 import 'package:mobile/utils/rests/snack_bar.dart';
-import 'package:mobile/views/dashboard_views/profiles/profile_view.dart';
 
 abstract class ProfileState {}
 

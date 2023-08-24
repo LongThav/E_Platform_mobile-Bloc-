@@ -160,8 +160,8 @@ class _UpdateProfileViewState extends State<UpdateProfileView> {
   }
 
   Widget _buildBottom() {
-    final width = MediaQuery.of(context).size.width;
-    final height = MediaQuery.of(context).size.height;
+    double width = MediaQuery.of(context).size.width;
+    double height = MediaQuery.of(context).size.height;
     return BlocBuilder<ProfileLogic, ProfileState>(builder: (context, state) {
       if (state is GetImageState) {
         String imgBase64 = state.base64;
