@@ -101,7 +101,7 @@ class AuthLogic extends Bloc<UserEvent, UserState> {
   AuthLogic(this.authService) : super(UserInitialize()) {
     //SignUp
     on<UserEventSignUp>((event, emit) async {
-      emit(UserInitialize());
+       emit(SetLoadingSingUp(true));
       try {
         var data = await authService.singUpService(
             event.username, event.email, event.password);
@@ -109,7 +109,7 @@ class AuthLogic extends Bloc<UserEvent, UserState> {
         await Future.delayed(const Duration(milliseconds: 600), () {
           pusReplaceView(event.context, IndexView());
         });
-        emit(SetLoadingSingUp(true));
+        emit(SetLoadingSingUp(false));
       } catch (err) {
         "Error in catch in logic: $err".log();
         emit(SetLoadingSingUp(false));
