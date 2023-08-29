@@ -206,7 +206,6 @@ class _SignInViewState extends State<SignInView> {
                             color: Colors.white,
                             letterSpacing: 1),
                       );
-                      ;
                     }
                   },
                 )),

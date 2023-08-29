@@ -17,68 +17,90 @@ class WelcomeView extends StatelessWidget {
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
     return Scaffold(
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(vertical: height * 0.04),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Container(
-                width: width,
-                height: height * 0.4,
-                decoration: const BoxDecoration(
-                    image: DecorationImage(
-                  image: AssetImage(welcom),
-                  fit: BoxFit.cover,
-                )),
-              ),
-              SizedBox(
-                height: height * 0.03,
-              ),
-              const Text(
-                "Welcom",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-              ),
-              SizedBox(
-                height: height * 0.02,
-              ),
-              Text(
-                "Sign in to enter the app",
-                style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                    color: Colors.grey[700],
-                    fontFamily: manrope,
-                    wordSpacing: 1.5,
-                    letterSpacing: 1.5),
-              ),
-              SizedBox(
-                height: height * 0.03,
-              ),
-              CommonBtn(
-                  label: 'Sign In', 
-                  voidCallback: () {
-                    pushView(context, const SignInView());
-                  }, 
-                  color: ColorsApp.btnColor),
-              const Text(
-                'Or',
-                style: TextStyle(
-                    fontSize: 18,
-                    fontFamily: manrope,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 0.5),
-              ),
-              CommonSignUp(
-                label: 'Sign Up',
+      body: Container(
+        width: width,
+        height: height,
+        child: LayoutBuilder(
+          builder: (context, constraints){
+            if(constraints.maxWidth >= 480){
+              return Column(
+                children: [
+                  Text("Fuck Fuck"),
+                ],
+              );
+            }else{
+              return _buildBody(context);
+            }
+          }
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBody(BuildContext context) {
+    double height = MediaQuery.of(context).size.height;
+    double width = MediaQuery.of(context).size.width;
+    return SafeArea(
+      child: SingleChildScrollView(
+        padding: EdgeInsets.symmetric(vertical: height * 0.04),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Container(
+              width: width,
+              height: height * 0.4,
+              decoration: const BoxDecoration(
+                  image: DecorationImage(
+                image: AssetImage(welcom),
+                fit: BoxFit.cover,
+              )),
+            ),
+            SizedBox(
+              height: height * 0.03,
+            ),
+            const Text(
+              "Welcom",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+            ),
+            SizedBox(
+              height: height * 0.02,
+            ),
+            Text(
+              "Sign in to enter the app",
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                  color: Colors.grey[700],
+                  fontFamily: manrope,
+                  wordSpacing: 1.5,
+                  letterSpacing: 1.5),
+            ),
+            SizedBox(
+              height: height * 0.03,
+            ),
+            CommonBtn(
+                label: 'Sign In',
                 voidCallback: () {
-                  pushView(context, const SignUpView());
+                  pushView(context, const SignInView());
                 },
-                color: const Color.fromRGBO(125, 158, 248, 100),
-              ),
-            ],
-          ),
+                color: ColorsApp.btnColor),
+            const Text(
+              'Or',
+              style: TextStyle(
+                  fontSize: 18,
+                  fontFamily: manrope,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 0.5),
+            ),
+            CommonSignUp(
+              label: 'Sign Up',
+              voidCallback: () {
+                pushView(context, const SignUpView());
+              },
+              color: const Color.fromRGBO(125, 158, 248, 100),
+            ),
+          ],
         ),
       ),
     );
