@@ -49,7 +49,7 @@ class UserEventSignIn extends UserEvent {
 }
 
 class SetLoadingUserSignIn extends UserState {
-  bool isLoading = true;
+  bool isLoading = false;
   SetLoadingUserSignIn(this.isLoading);
 }
 
@@ -118,7 +118,7 @@ class AuthLogic extends Bloc<UserEvent, UserState> {
 
     //SignIn
     on<UserEventSignIn>((event, emit) async {
-      emit(UserInitialize());
+      emit(SetLoadingUserSignIn(true));
       bool data = await authService.loginService(
           event.email, event.password, event.context);
       if (data != true) {
@@ -129,7 +129,7 @@ class AuthLogic extends Bloc<UserEvent, UserState> {
         Future.delayed(const Duration(milliseconds: 5), () {
           pusReplaceView(event.context, IndexView());
         });
-        emit(SetLoadingUserSignIn(true));
+        emit(SetLoadingUserSignIn(false));
       }
     });
 

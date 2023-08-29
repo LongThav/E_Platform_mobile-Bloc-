@@ -38,6 +38,7 @@ class _UpdateProfileViewState extends State<UpdateProfileView> {
     "UserName: ${_userNameCtrl.text}".log();
     emailCtrl = TextEditingController(text: widget.email);
     imageCtrl = TextEditingController(text: widget.img);
+    context.read<ProfileLogic>().add(ProfileAppEvent());
     super.initState();
   }
 
@@ -175,14 +176,12 @@ class _UpdateProfileViewState extends State<UpdateProfileView> {
             } else {
               "Update with ImgBase64".log();
               // cacheProfile.deleteAll();
-              await Future.delayed(Duration(milliseconds: 600), () {
-                context.read<ProfileLogic>().add(UpdateProfileEvent(
-                    _userNameCtrl.text,
-                    emailCtrl.text,
-                    imgBase64,
-                    widget.id,
-                    context));
-              });
+              context.read<ProfileLogic>().add(UpdateProfileEvent(
+                  _userNameCtrl.text,
+                  emailCtrl.text,
+                  imgBase64,
+                  widget.id,
+                  context));
               "Updated".log();
               "_UserName; $_userNameCtrl".log();
               context.read<ProfileLogic>().add(ProfileAppEvent());

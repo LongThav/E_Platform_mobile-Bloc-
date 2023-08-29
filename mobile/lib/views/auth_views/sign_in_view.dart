@@ -27,7 +27,7 @@ class _SignInViewState extends State<SignInView> {
   @override
   void initState() {
     // ignore: invalid_use_of_visible_for_testing_member
-    context.read<AuthLogic>().emit(SetLoadingUserSignIn(true));
+    // context.read<AuthLogic>().emit(SetLoadingUserSignIn(true));
     super.initState();
   }
 
@@ -181,22 +181,22 @@ class _SignInViewState extends State<SignInView> {
                     borderRadius: BorderRadius.circular(20)),
                 child: Center(child: BlocBuilder<AuthLogic, UserState>(
                   builder: (context, state) {
-                    // return state is SetLoadingUserSignIn
-                    //     ? Text(
-                    //         "Sign In",
-                    //         style: const TextStyle(
-                    //             fontFamily: manrope,
-                    //             fontSize: 18,
-                    //             fontWeight: FontWeight.bold,
-                    //             color: Colors.white,
-                    //             letterSpacing: 1),
-                    //       )
-                    //     : CircularProgressIndicator(
-                    //         color: Colors.white,
-                    //       );
-                    "Start Loading".log();
-                    if (state is SetLoadingUserSignIn == true) {
-                      "Login success".log;
+                    if (state is SetLoadingUserSignIn) {
+                      bool isLoading = state.isLoading;
+                      return isLoading
+                          ? CircularProgressIndicator(
+                              color: Colors.white,
+                            )
+                          : Text(
+                              "Sign IN",
+                              style: const TextStyle(
+                                  fontFamily: manrope,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                  letterSpacing: 1),
+                            );
+                    } else {
                       return Text(
                         "Sign IN",
                         style: const TextStyle(
@@ -206,14 +206,7 @@ class _SignInViewState extends State<SignInView> {
                             color: Colors.white,
                             letterSpacing: 1),
                       );
-                    } else if (state is SetLoadingUserSignIn == false) {
-                      "Loading btn".log();
-                      return CupertinoActivityIndicator(
-                        color: Colors.white,
-                        animating: true,
-                      );
-                    } else {
-                      return Container();
+                      ;
                     }
                   },
                 )),

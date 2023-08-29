@@ -15,11 +15,12 @@ void main() {
   runApp(MultiBlocProvider(
       providers: [
         BlocProvider<AuthLogic>(create: (context) => AuthLogic(authService)),
-        BlocProvider<ProfileLogic>(
-            create: (context) => ProfileLogic(profileService)),
+        BlocProvider<ProfileLogic>(create: (context) => ProfileLogic(profileService)),
       ],
       child: const MaterialApp(
         debugShowCheckedModeBanner: false,
         home: SplashView(),
-      )));
+      )
+    )
+  );
 }

@@ -41,8 +41,6 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
       appBar: AppBar(
         leading: IconButton(
           onPressed: () {
-            // ignore: invalid_use_of_visible_for_testing_member
-            context.read<AuthLogic>().emit(SetLoadingUserSignIn(true));
             backView(context);
           },
           icon: const Icon(
