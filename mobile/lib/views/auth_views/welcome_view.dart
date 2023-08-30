@@ -14,25 +14,19 @@ class WelcomeView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double height = MediaQuery.of(context).size.height;
-    double width = MediaQuery.of(context).size.width;
     return Scaffold(
-      body: Container(
-        width: width,
-        height: height,
-        child: LayoutBuilder(
-          builder: (context, constraints){
-            if(constraints.maxWidth >= 480){
-              return Column(
-                children: [
-                  Text("Fuck Fuck"),
-                ],
-              );
-            }else{
-              return _buildBody(context);
-            }
+      body: LayoutBuilder(
+        builder: (context, constraints){
+          if(constraints.maxWidth > 600){
+            return Column(
+              children: [
+                Text("Fuck Fuck"),
+              ],
+            );
+          }else{
+            return _buildBody(context);
           }
-        ),
+        }
       ),
     );
   }

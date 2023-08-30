@@ -10,3 +10,5 @@ String verifyPin = "/verify-pin";
 String resentPin = "/verify-pin";
 String resetPassword = "/reset-password";
 String getProfile = "/get-profile";
+
+String getAllUser = "/get-all-user";
