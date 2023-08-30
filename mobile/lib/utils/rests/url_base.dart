@@ -12,3 +12,7 @@ String resetPassword = "/reset-password";
 String getProfile = "/get-profile";
 
 String getAllUser = "/get-all-user";
+
+//my course
+String allCourse = "/get-mycourse";
+String allCourseById = "";

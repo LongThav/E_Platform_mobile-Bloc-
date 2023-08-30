@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mobile/logics/my_course_logic.dart';
+import 'package:mobile/models/course/list_course_model.dart';
 import 'package:mobile/utils/rests/handle_push_view.dart';
 import 'package:mobile/views/dashboard_views/my_courses/chat_view.dart';
 import '/utils/constants/color_app.dart';
@@ -128,6 +131,12 @@ class _MyCourseViewState extends State<MyCourseView> {
   ];
 
   @override
+  void initState() {
+    context.read<MyCourseLogic>().add(ReadMyCourseEvent());
+    super.initState();
+  }
+
+  @override
   void dispose() {
     _pageController.dispose();
     super.dispose();
@@ -175,6 +184,7 @@ class _MyCourseViewState extends State<MyCourseView> {
                           indexTitle = index;
                           if (index == 0) {
                             _sub = "My Courses";
+                            context.read<MyCourseLogic>().add(ReadMyCourseEvent());
                           } else if (index == 1) {
                             _sub = "Live Sessions";
                           } else {
@@ -223,14 +233,31 @@ class _MyCourseViewState extends State<MyCourseView> {
                   width: width,
                   height: height * 0.7,
                   child: PageView(
-                    onPageChanged: (value){
+                    onPageChanged: (value) {
                       setState(() {
                         indexTitle = value;
                       });
                     },
                     controller: _pageController,
                     children: [
-                      _buildCourse(width, height),
+                      BlocBuilder<MyCourseLogic, MyCourseState>(
+                          builder: (context, state) {
+                        if (state is InitializeState || state is LoadingState) {
+                          return Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        } else if (state is ErrorState) {
+                          String err = state.error;
+                          return Center(
+                            child: Text(err),
+                          );
+                        } else if (state is ReadMyCourseStateSuccess) {
+                          var data = state.courseModel;
+                          return _buildCourse(data, width, height);
+                        } else {
+                          return Container();
+                        }
+                      }),
                       _buildLiveSession(width, height),
                       _buildBookMark(width, height),
                     ],
@@ -243,137 +270,145 @@ class _MyCourseViewState extends State<MyCourseView> {
       ),
     );
   }
-  Widget _buildCourse(double width, double height) {
-    return SizedBox(
-      child: ListView.builder(
-        itemCount: skillDevelopment.length,
-        itemBuilder: (context, index) {
-          return Container(
-            margin: const EdgeInsets.only(bottom: 0, top: 10),
-            padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
-            decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    blurRadius: 2.0,
-                    color: ColorsApp.colorView,
-                    offset: const Offset(-7, -8),
-                  )
-                ]),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      width: 100,
-                      height: 90,
-                      decoration: BoxDecoration(
-                          color: ColorsApp.colorView,
-                          borderRadius: BorderRadius.circular(12),
-                          image: DecorationImage(
-                              image:
-                                  AssetImage(skillDevelopment[index]['img']))),
-                    ),
-                    SizedBox(
-                      width: width * 0.03,
-                    ),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          skillDevelopment[index]['title'],
-                          style: const TextStyle(
-                            fontFamily: manropeBold,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
+
+  Widget _buildCourse(CourseModel _courseModel ,double width, double height) {
+    return RefreshIndicator(
+      onRefresh: ()async{
+        context.read<MyCourseLogic>().add(ReadMyCourseEvent());
+      },
+      child: SizedBox(
+        child: ListView.builder(
+          shrinkWrap: true,
+          itemCount: _courseModel.datacourse.length,
+          itemBuilder: (context, index) {
+            var data = _courseModel.datacourse[index];
+            return Container(
+              margin: const EdgeInsets.only(bottom: 0, top: 10),
+              padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+              decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      blurRadius: 2.0,
+                      color: ColorsApp.colorView,
+                      offset: const Offset(-7, -8),
+                    )
+                  ]),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        width: 100,
+                        height: 90,
+                        decoration: BoxDecoration(
+                            color: ColorsApp.colorView,
+                            borderRadius: BorderRadius.circular(12),
+                            image: DecorationImage(
+                                image:
+                                    AssetImage(skillDevelopment[index]['img']))),
+                      ),
+                      SizedBox(
+                        width: width * 0.03,
+                      ),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            data.title,
+                            style: const TextStyle(
+                              fontFamily: manropeBold,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(
+                            height: height * 0.01,
+                          ),
+                          Row(
+                            children: const [
+                              Icon(
+                                Icons.star,
+                                color: Colors.yellow,
+                                size: 18,
+                              ),
+                              Icon(
+                                Icons.star,
+                                color: Colors.yellow,
+                                size: 18,
+                              ),
+                              Icon(
+                                Icons.star,
+                                color: Colors.yellow,
+                                size: 18,
+                              ),
+                              Icon(
+                                Icons.star,
+                                color: Colors.yellow,
+                                size: 18,
+                              ),
+                            ],
+                          ),
+                          SizedBox(
+                            height: height * 0.01,
+                          ),
+                          Row(
+                            children: [
+                              const Icon(
+                                Icons.alarm_outlined,
+                                size: 18,
+                              ),
+                              Text(
+                                data.timeVideo,
+                                style: const TextStyle(
+                                    fontFamily: manrope,
+                                    fontWeight: FontWeight.bold,
+                                    letterSpacing: 0.5),
+                              )
+                            ],
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                            shape: BoxShape.circle, color: ColorsApp.circleColor),
+                        child: const Center(
+                          child: Icon(
+                            Icons.arrow_forward_ios,
+                            color: Colors.white,
+                            size: 20,
                           ),
                         ),
-                        SizedBox(
-                          height: height * 0.01,
-                        ),
-                        Row(
-                          children: const [
-                            Icon(
-                              Icons.star,
-                              color: Colors.yellow,
-                              size: 18,
-                            ),
-                            Icon(
-                              Icons.star,
-                              color: Colors.yellow,
-                              size: 18,
-                            ),
-                            Icon(
-                              Icons.star,
-                              color: Colors.yellow,
-                              size: 18,
-                            ),
-                            Icon(
-                              Icons.star,
-                              color: Colors.yellow,
-                              size: 18,
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          height: height * 0.01,
-                        ),
-                        Row(
-                          children: [
-                            const Icon(
-                              Icons.alarm_outlined,
-                              size: 18,
-                            ),
-                            Text(
-                              skillDevelopment[index]['duration'],
-                              style: const TextStyle(
-                                  fontFamily: manrope,
-                                  fontWeight: FontWeight.bold,
-                                  letterSpacing: 0.5),
-                            )
-                          ],
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                          shape: BoxShape.circle, color: ColorsApp.circleColor),
-                      child: const Center(
-                        child: Icon(
-                          Icons.arrow_forward_ios,
-                          color: Colors.white,
-                          size: 20,
-                        ),
                       ),
-                    ),
-                    SizedBox(
-                      height: height * 0.005,
-                    ),
-                    Text(
-                      "USD:${skillDevelopment[index]['price']}",
-                      style: const TextStyle(
-                          fontFamily: manrope,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 0.5,
-                          fontSize: 13),
-                    )
-                  ],
-                ),
-              ],
-            ),
-          );
-        },
+                      SizedBox(
+                        height: height * 0.005,
+                      ),
+                      Text(
+                        "USD:${data.price}",
+                        style: const TextStyle(
+                            fontFamily: manrope,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 0.5,
+                            fontSize: 13),
+                      )
+                    ],
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
       ),
     );
   }
@@ -718,11 +753,13 @@ class _MyCourseViewState extends State<MyCourseView> {
                       )
                     ],
                   ),
-                  const SizedBox(width: 15,),
+                  const SizedBox(
+                    width: 15,
+                  ),
                   Column(
                     children: [
                       InkWell(
-                        onTap: (){
+                        onTap: () {
                           pushView(context, const VideoCallView());
                         },
                         child: Container(
@@ -741,9 +778,11 @@ class _MyCourseViewState extends State<MyCourseView> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 10,),
+                      const SizedBox(
+                        height: 10,
+                      ),
                       InkWell(
-                        onTap: (){
+                        onTap: () {
                           pushView(context, const ChatView());
                         },
                         child: Container(
@@ -753,7 +792,7 @@ class _MyCourseViewState extends State<MyCourseView> {
                           decoration: BoxDecoration(
                               color: Colors.grey[300],
                               borderRadius: BorderRadius.circular(12)),
-                          child:  Center(
+                          child: Center(
                             child: Image.asset("assets/imgs/sms.png"),
                           ),
                         ),
