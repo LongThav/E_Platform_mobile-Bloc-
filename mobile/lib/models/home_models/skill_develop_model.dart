@@ -1,9 +1,9 @@
 class SkillDevModel{
-  final bool code;
+  final int code;
   final bool response;
   List<SkillData> skill;
   SkillDevModel({
-    this.code = false,
+    this.code = 0,
     this.response = false,
     this.skill = const []
   });
@@ -64,22 +64,22 @@ class Comments{
 class Comment{
   final int id;
   final String body;
-  final String? userId;
-  final String? postId;
+  final int? userId;
+  final int? postId;
   final dynamic likeCount;
   Comment({
     this.id = 0,
     this.body = 'no-body',
-    this.userId = 'no-userId',
-    this.postId = 'no-postId',
+    this.userId = 0,
+    this.postId = 0,
     this.likeCount
   });
 
   factory Comment.fromJson(Map<String,dynamic>json)=>Comment(
     id: json["id"],
     body: json["body"],
-    userId: json["user_Id"] ?? "",
-    postId: json["post_id"] ?? "",
+    userId: json["user_Id"] ?? 0,
+    postId: json["post_id"] ?? 0,
     likeCount: json["like_count"] ?? 0
   );
 }

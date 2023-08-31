@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mobile/models/home_models/skill_develop_model.dart';
+import 'package:mobile/utils/rests/url_base.dart';
 
+import '../../../logics/home_logic.dart';
 import '/utils/rests/handle_push_view.dart';
 import '/utils/constants/color_app.dart';
 import '/utils/constants/font_app.dart';
 import '../../../utils/constants/img_static.dart';
+import 'detail_view.dart';
 import 'invite_friend_view.dart';
 
 class HomeView extends StatefulWidget {
@@ -58,6 +63,12 @@ class _HomeViewState extends State<HomeView> {
       "price": "\$30.00"
     },
   ];
+  @override
+  void initState() {
+    context.read<HomeLogic>().add(ReadSkillEvent());
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -212,7 +223,23 @@ class _HomeViewState extends State<HomeView> {
           const SizedBox(
             height: 10,
           ),
-          _buildSkillDevelopemt(width, height),
+          BlocBuilder<HomeLogic, HomeState>(builder: (context, state) {
+            if (state is HomeInitializeState || state is HomeLoadingState) {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            } else if (state is HomeErrorState) {
+              String err = state.error;
+              return Center(
+                child: Text(err),
+              );
+            } else if (state is ReadSkillState) {
+              var data = state.skillDevModel;
+              return _buildSkillDevelopemt(data, width, height);
+            } else {
+              return Container();
+            }
+          }),
         ],
       ),
     );
@@ -341,128 +368,142 @@ class _HomeViewState extends State<HomeView> {
     );
   }
 
-  Widget _buildSkillDevelopemt(double width, double height) {
-    return Column(
-      children: List.generate(skillDevelopment.length, (index) {
-        return Container(
-          margin: const EdgeInsets.symmetric(vertical: 5),
-          padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    width: 100,
-                    height: 90,
-                    decoration: BoxDecoration(
-                        color: ColorsApp.colorView,
-                        borderRadius: BorderRadius.circular(12),
-                        image: DecorationImage(
-                            image: AssetImage(skillDevelopment[index]['img']))),
-                  ),
-                  SizedBox(
-                    width: width * 0.03,
-                  ),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        skillDevelopment[index]['title'],
-                        style: const TextStyle(
-                          fontFamily: manropeBold,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
+  Widget _buildSkillDevelopemt(SkillDevModel skillDevModel ,double width, double height) {
+    return Container(
+      height: height * 0.5,
+      child: RefreshIndicator(
+        onRefresh: ()async{
+          context.read<HomeLogic>().add(ReadSkillEvent());
+        },
+        child: ListView.builder(
+          itemCount: skillDevModel.skill.length,
+          itemBuilder: (context, index){
+            return InkWell(
+              onTap: ()async{
+                pushView(context, DetailHomeCourseView(skillDevModel: skillDevModel.skill[index],));
+              },
+              child: Container(
+                margin: const EdgeInsets.symmetric(vertical: 5),
+                padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          width: 100,
+                          height: 90,
+                          decoration: BoxDecoration(
+                              color: ColorsApp.colorView,
+                              borderRadius: BorderRadius.circular(12),
+                              image: DecorationImage(
+                                  image: NetworkImage(hostImg + skillDevModel.skill[index].image))),
                         ),
-                      ),
-                      SizedBox(
-                        height: height * 0.01,
-                      ),
-                      Row(
-                        children: const [
-                          Icon(
-                            Icons.star,
-                            color: Colors.yellow,
-                            size: 18,
-                          ),
-                          Icon(
-                            Icons.star,
-                            color: Colors.yellow,
-                            size: 18,
-                          ),
-                          Icon(
-                            Icons.star,
-                            color: Colors.yellow,
-                            size: 18,
-                          ),
-                          Icon(
-                            Icons.star,
-                            color: Colors.yellow,
-                            size: 18,
-                          ),
-                        ],
-                      ),
-                      SizedBox(
-                        height: height * 0.01,
-                      ),
-                      Row(
-                        children: [
-                          const Icon(
-                            Icons.alarm_outlined,
-                            size: 18,
-                          ),
-                          Text(
-                            skillDevelopment[index]['duration'],
-                            style: const TextStyle(
-                                fontFamily: manrope,
+                        SizedBox(
+                          width: width * 0.03,
+                        ),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              skillDevModel.skill[index].title,
+                              style: const TextStyle(
+                                fontFamily: manropeBold,
+                                fontSize: 18,
                                 fontWeight: FontWeight.bold,
-                                letterSpacing: 0.5),
-                          )
-                        ],
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                        shape: BoxShape.circle, color: ColorsApp.circleColor),
-                    child: const Center(
-                      child: Icon(
-                        Icons.arrow_forward_ios,
-                        color: Colors.white,
-                        size: 20,
-                      ),
+                              ),
+                            ),
+                            SizedBox(
+                              height: height * 0.01,
+                            ),
+                            Row(
+                              children: const [
+                                Icon(
+                                  Icons.star,
+                                  color: Colors.yellow,
+                                  size: 18,
+                                ),
+                                Icon(
+                                  Icons.star,
+                                  color: Colors.yellow,
+                                  size: 18,
+                                ),
+                                Icon(
+                                  Icons.star,
+                                  color: Colors.yellow,
+                                  size: 18,
+                                ),
+                                Icon(
+                                  Icons.star,
+                                  color: Colors.yellow,
+                                  size: 18,
+                                ),
+                              ],
+                            ),
+                            SizedBox(
+                              height: height * 0.01,
+                            ),
+                            Row(
+                              children: [
+                                const Icon(
+                                  Icons.alarm_outlined,
+                                  size: 18,
+                                ),
+                                Text(
+                                  skillDevModel.skill[index].totalTime,
+                                  style: const TextStyle(
+                                      fontFamily: manrope,
+                                      fontWeight: FontWeight.bold,
+                                      letterSpacing: 0.5),
+                                )
+                              ],
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
-                  ),
-                  SizedBox(
-                    height: height * 0.005,
-                  ),
-                  Text(
-                    "USD:${skillDevelopment[index]['price']}",
-                    style: const TextStyle(
-                        fontFamily: manrope,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 0.5,
-                        fontSize: 13),
-                  )
-                ],
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                              shape: BoxShape.circle, color: ColorsApp.circleColor),
+                          child: const Center(
+                            child: Icon(
+                              Icons.arrow_forward_ios,
+                              color: Colors.white,
+                              size: 20,
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          height: height * 0.005,
+                        ),
+                        Text(
+                          "USD:${skillDevModel.skill[index].price}",
+                          style: const TextStyle(
+                              fontFamily: manrope,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 0.5,
+                              fontSize: 13),
+                        )
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ],
-          ),
-        );
-      }),
+            );
+          }
+        ),
+      ),
     );
   }
 }

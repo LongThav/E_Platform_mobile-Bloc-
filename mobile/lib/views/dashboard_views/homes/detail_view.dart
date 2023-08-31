@@ -1,28 +1,28 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mobile/models/home_models/skill_develop_model.dart';
+import 'package:mobile/utils/rests/url_base.dart';
 
 import '../../../commons/common_forword.dart';
+import '../../../logics/home_logic.dart';
 import '../../../utils/constants/color_app.dart';
 import '../../../utils/constants/font_app.dart';
 import '../../../utils/rests/handle_push_view.dart';
+import 'check_out_view.dart';
 
-class DetailItemCourseView extends StatefulWidget {
-  final String title;
-  final String img;
-  final String price;
-  final String duration;
-  const DetailItemCourseView(
-      {super.key,
-      required this.title,
-      required this.img,
-      required this.price,
-      required this.duration});
+class DetailHomeCourseView extends StatefulWidget {
+  final SkillData skillDevModel;
+  const DetailHomeCourseView({
+    super.key,
+    required this.skillDevModel,
+  });
 
   @override
-  State<DetailItemCourseView> createState() => _DetailItemCourseViewState();
+  State<DetailHomeCourseView> createState() => _DetailHomeCourseViewState();
 }
 
-class _DetailItemCourseViewState extends State<DetailItemCourseView> {
+class _DetailHomeCourseViewState extends State<DetailHomeCourseView> {
   double progress = 1 / 1.5;
   int selectIndex = 0;
   final PageController _pageController = PageController();
@@ -42,7 +42,9 @@ class _DetailItemCourseViewState extends State<DetailItemCourseView> {
       backgroundColor: ColorsApp.colorView,
       bottomNavigationBar: CommonForward(
         label: 'Checkout',
-        voidCallback: () {},
+        voidCallback: () {
+          pushView(context, HomeCheckOutView(title: widget.skillDevModel.title, id: widget.skillDevModel.id,));
+        },
       ),
       appBar: AppBar(
         backgroundColor: ColorsApp.colorView,
@@ -50,6 +52,7 @@ class _DetailItemCourseViewState extends State<DetailItemCourseView> {
         leading: InkWell(
           onTap: () {
             backView(context);
+            context.read<HomeLogic>().add(ReadSkillEvent());
           },
           child: Container(
             margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
@@ -124,35 +127,35 @@ class _DetailItemCourseViewState extends State<DetailItemCourseView> {
                     Row(
                       children: [
                         Container(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 8, horizontal: 8),
-                      margin: const EdgeInsets.only(left: 15, top: 15),
-                      decoration: BoxDecoration(
-                        color: ColorsApp.btnColor,
-                        borderRadius: BorderRadius.circular(3),
-                      ),
-                      child: const Center(
-                        child: Text(
-                          "Top Selling",
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                              fontFamily: manropeBold),
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 8, horizontal: 8),
+                          margin: const EdgeInsets.only(left: 15, top: 15),
+                          decoration: BoxDecoration(
+                            color: ColorsApp.btnColor,
+                            borderRadius: BorderRadius.circular(3),
+                          ),
+                          child: const Center(
+                            child: Text(
+                              "Top Selling",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                  fontFamily: manropeBold),
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                    Padding(
-                      padding:
-                          const EdgeInsets.only(top: 15, left: 15, right: 15),
-                      child: Text(
-                        widget.title,
-                        style: TextStyle(
-                            color: Colors.grey[700],
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: manropeBold),
-                      ),
-                    ),
+                        Padding(
+                          padding: const EdgeInsets.only(
+                              top: 15, left: 15, right: 15),
+                          child: Text(
+                            widget.skillDevModel.title,
+                            style: TextStyle(
+                                color: Colors.grey[700],
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: manropeBold),
+                          ),
+                        ),
                       ],
                     ),
                     // SizedBox(
@@ -174,7 +177,7 @@ class _DetailItemCourseViewState extends State<DetailItemCourseView> {
                   height: 15,
                 ),
                 Center(
-                  child: Image.asset("assets/imgs/detail_view.png"),
+                  child: Image.network(hostImg + widget.skillDevModel.image, width: width * 0.3, height: height * 0.2,),
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 15),
@@ -227,9 +230,9 @@ class _DetailItemCourseViewState extends State<DetailItemCourseView> {
                           borderRadius: BorderRadius.circular(5),
                           color: const Color(0XFFff743a),
                         ),
-                        child: const Center(
+                        child:  Center(
                           child: Text(
-                            '\$:29.00',
+                            '\$:${widget.skillDevModel.price}',
                             style: TextStyle(color: Colors.white),
                           ),
                         ),
@@ -412,8 +415,8 @@ class _DetailItemCourseViewState extends State<DetailItemCourseView> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    "6hr 40mn to go",
+                   Text(
+                    "${widget.skillDevModel.totalTime} to go",
                     style: TextStyle(fontSize: 18, fontFamily: manropeBold),
                   ),
                   const SizedBox(
@@ -423,9 +426,8 @@ class _DetailItemCourseViewState extends State<DetailItemCourseView> {
                     width: width / 2,
                     height: 10,
                     decoration: BoxDecoration(
-                      color: Colors.grey,
-                      borderRadius: BorderRadius.circular(12)
-                    ),
+                        color: Colors.grey,
+                        borderRadius: BorderRadius.circular(12)),
                   ),
                   const Text(
                     "2 assignments due",

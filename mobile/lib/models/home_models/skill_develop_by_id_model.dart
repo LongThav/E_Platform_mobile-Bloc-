@@ -1,9 +1,9 @@
 class SkillDevByIdModel{
-  final bool code;
+  final int code;
   final bool response;
   List<SkillDataById> skillById;
   SkillDevByIdModel({
-    this.code = false,
+    this.code = 0,
     this.response = false,
     this.skillById = const []
   });
@@ -65,14 +65,14 @@ class Comments{
 class Comment{
   final int id;
   final String body;
-  final String? userId;
-  final String? postId;
+  final int? userId;
+  final int? postId;
   final dynamic likeCount;
   Comment({
     this.id = 0,
     this.body = 'no-body',
-    this.userId = 'no-userId',
-    this.postId = 'no-postId',
+    this.userId = 0,
+    this.postId = 0,
     this.likeCount
   });
 
