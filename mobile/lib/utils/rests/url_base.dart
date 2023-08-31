@@ -16,3 +16,6 @@ String getAllUser = "/get-all-user";
 //my course
 String allCourse = "/get-mycourse";
 String allCourseById = "";
+
+//Home
+String getAllSkill = "/get-all-skill";
