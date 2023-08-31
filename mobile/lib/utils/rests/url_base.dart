@@ -19,3 +19,4 @@ String allCourseById = "";
 
 //Home
 String getAllSkill = "/get-all-skill";
+String getSkillById = "/get-by-skill";
